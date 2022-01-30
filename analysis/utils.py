@@ -17,6 +17,35 @@ else:
     print('figures saved to /tmp/figures')
 
 ########### Prepare Functions ###########
+
+def filter_df(rule_df, keyword):
+    df_ant = pd.DataFrame(columns=rule_df.columns)
+    df_con = pd.DataFrame(columns=rule_df.columns)
+    ind_ant = 0
+    ind_con = 0
+    for df_iter in rule_df.iterrows():
+        df_row = df_iter[1]
+        if keyword in df_row['antecedents']: 
+            df_ant.loc[ind_ant] = df_row
+            ind_ant +=1
+        if keyword in df_row['consequents']:
+            df_con.loc[ind_con] = df_row
+            ind_con += 1
+    return df_ant, df_con
+
+def get_usr_thr(column, mode='top'):
+    pareto = len(column) * 0.2
+    total_cnt = 0
+    if mode == 'top':
+        ascend = False
+    elif mode == 'bot':
+        ascend = True
+
+    for count in column.value_counts(ascending=ascend).to_list():
+        total_cnt += count
+        if total_cnt >= pareto:
+            return count
+
 def get_df(file, header=None):
     df = pd.read_csv(file, header=None)
     # df.columns = DF_HEADER.get(key, df.columns)
